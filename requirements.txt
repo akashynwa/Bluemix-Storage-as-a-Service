@@ -1,0 +1,4 @@
+python-swiftclient==2.6.0
+Flask==0.11.1
+pyDes==2.0.1
+python-keystoneclient==1.7.1
