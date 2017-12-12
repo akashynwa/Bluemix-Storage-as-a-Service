@@ -1,0 +1,83 @@
+<html>
+<head>
+<script
+  src="https://code.jquery.com/jquery-3.1.1.min.js"
+  integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8="
+  crossorigin="anonymous"></script>
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+    <style>
+        input, form, label {
+    display: inline;
+}
+    </style>
+</head>
+<body>
+
+<h1>
+    Welcome to Cloud File Store System !
+</h1>
+<hr>
+<h2>
+    Upload File
+</h2>
+<p id="uploadstatus"></p>
+<form action="upload" enctype="multipart/form-data" method="post" id="fileupload">
+    <label> Select File </label>
+    <input type="file" name="file" id="fileinput" required  class="btn btn-default">
+    <input type="submit" value="Submit" id="submit" class="btn btn-primary">
+</form>
+<hr>
+<h2>
+    List Of Files
+</h2>
+
+    {% if filelist: %}
+         {% for k, v in filelist[0].items() %}
+        <li> {{v}}
+            <form method="post" action="downloadFile">
+                {% set list1 = v.split('\t\t') %}
+                {% set list2 = list1[0].split(':') %}
+
+                <input type="hidden" name="filename" value="{{list2[1]}}" >
+                <button type="submit"  class="btn btn-info"  value="Download">Download
+                <span class="glyphicon glyphicon-download-alt" aria-hidden="true"></span></button>
+            </form>
+
+            <button value="Delete" class="btn btn-danger" onclick="deleteFile('{{list2[1]}}')">Delete
+                <span class="glyphicon glyphicon-trash" aria-hidden="true"></span>
+            </button>
+        </li>
+        {% endfor %}
+    {% endif %}
+
+<hr>
+<script>
+    function deleteFile (fname) {
+       $.get('/deletefile/'+ fname.trim(),function (result){
+           if(result){
+               console.log("File deleted successfully");
+               window.location = "/";
+           }
+           else{
+                $("#uploadstatus").html("File not deleted");
+           }
+       });
+    }
+    $(function() {
+        var x = {{uploadstatus}} ;
+        if(x == '0'){
+            $("#uploadstatus").html("File upload unsuccessful ! Either file size is more than 1mb or your total " +
+            "allocated folder size exceeds 10mb.");
+        } else if (x == '1'){
+            $("#uploadstatus").html("File upload successful");
+        }
+        else {
+            $("#uploadstatus").html("");
+        }
+    });
+</script>
+</body>
+</html>
